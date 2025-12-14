@@ -42,7 +42,7 @@ Choose your preferred visual style:
 
 ```bash
 # Add the marketplace
-claude plugins marketplace add yasincoskun/claude-tool-tracker
+claude plugins marketplace add yajinn/claude-tool-tracker
 
 # Install the plugin
 claude plugins add claude-tool-tracker
@@ -51,13 +51,13 @@ claude plugins add claude-tool-tracker
 ### Alternative: Direct GitHub Install
 
 ```bash
-claude plugins add github:yasincoskun/claude-tool-tracker
+claude plugins add github:yajinn/claude-tool-tracker
 ```
 
 ### Local Development
 
 ```bash
-git clone https://github.com/yasincoskun/claude-tool-tracker.git
+git clone https://github.com/yajinn/claude-tool-tracker.git
 claude plugins add ./claude-tool-tracker
 ```
 
@@ -174,7 +174,7 @@ MIT
 
 ## Author
 
-Yasin Coskun ([@yasincoskun](https://github.com/yasincoskun))
+Yasin Coskun ([@yajinn](https://github.com/yajinn))
 
 ## Contributing
 

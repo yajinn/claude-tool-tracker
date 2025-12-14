@@ -4,9 +4,9 @@
   "description": "Visual tool usage logging with statistics and theme support for Claude Code",
   "author": {
     "name": "Yasin Coskun",
-    "url": "https://github.com/yasincoskun"
+    "url": "https://github.com/yajinn"
   },
-  "repository": "https://github.com/yasincoskun/claude-tool-tracker",
+  "repository": "https://github.com/yajinn/claude-tool-tracker",
   "license": "MIT",
   "keywords": [
     "claude-code",
