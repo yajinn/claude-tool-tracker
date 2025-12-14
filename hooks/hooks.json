@@ -1,0 +1,17 @@
+{
+  "description": "Track and visualize tool usage in Claude Code sessions",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/handlers/track-tool.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
