@@ -720,23 +720,26 @@
                 <div class="install-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>Install the Plugin</h3>
+                        <h3>Add the Marketplace</h3>
                         <div class="code-block">
-                            <span class="prompt">$</span> <span class="command">claude plugins add yajinn/claude-tool-tracker</span>
+                            <span class="prompt">/</span><span class="command">plugin marketplace add yajinn/claude-tool-tracker</span>
                         </div>
                     </div>
                 </div>
                 <div class="install-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Start Using Claude Code</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 12px;">The plugin activates automatically. Every tool call will now be tracked and displayed.</p>
+                        <h3>Install the Plugin</h3>
+                        <div class="code-block">
+                            <span class="prompt">/</span><span class="command">plugin install claude-tool-tracker@yajinn-plugins</span>
+                        </div>
                     </div>
                 </div>
                 <div class="install-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>View Your Statistics</h3>
+                        <h3>Restart & Use</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 12px;">Restart Claude Code. Every tool call will now be tracked!</p>
                         <div class="code-block">
                             <span class="prompt">/</span><span class="command">tool-stats</span>
                         </div>

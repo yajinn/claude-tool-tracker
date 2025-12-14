@@ -38,34 +38,40 @@ Choose your preferred visual style:
 
 ## Installation
 
-### Quick Install (Recommended)
+### Quick Install (2 steps)
 
+**Step 1:** Add the marketplace
 ```bash
-# Add the marketplace
-claude plugins marketplace add yajinn/claude-tool-tracker
-
-# Install the plugin
-claude plugins add claude-tool-tracker
+/plugin marketplace add yajinn/claude-tool-tracker
 ```
 
-### Alternative: Direct GitHub Install
-
+**Step 2:** Install the plugin
 ```bash
-claude plugins add github:yajinn/claude-tool-tracker
+/plugin install claude-tool-tracker@yajinn-plugins
+```
+
+**Step 3:** Restart Claude Code to activate
+
+### Verify Installation
+
+After restarting, run:
+```bash
+/tool-stats
 ```
 
 ### Local Development
 
 ```bash
 git clone https://github.com/yajinn/claude-tool-tracker.git
-claude plugins add ./claude-tool-tracker
+/plugin marketplace add ./claude-tool-tracker
+/plugin install claude-tool-tracker@yajinn-plugins
 ```
 
-### Verify Installation
+### Uninstall
 
-After installation, restart Claude Code and run:
 ```bash
-/tool-stats
+/plugin uninstall claude-tool-tracker@yajinn-plugins
+/plugin marketplace remove yajinn-plugins
 ```
 
 ## Usage
