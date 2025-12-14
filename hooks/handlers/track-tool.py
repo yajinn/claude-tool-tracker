@@ -67,22 +67,31 @@ def render_colorful(tool_type: str, primary: str, secondary: str = "", extra: st
 
 
 def render_minimal(tool_type: str, primary: str, secondary: str = "", extra: str = "") -> str:
-    """Render tool usage in minimal theme."""
+    """Render tool usage in minimal/clean theme (screenshot format)."""
     colors = {
         "mcp": CYAN,
         "agent": MAGENTA,
         "skill": YELLOW,
         "command": GREEN,
-        "native": GRAY
+        "native": GREEN  # TOOL prefix in green
+    }
+
+    # Labels matching screenshot format
+    labels = {
+        "mcp": "MCP",
+        "agent": "AGENT",
+        "skill": "SKILL",
+        "command": "CMD",
+        "native": "TOOL"  # Screenshot shows "TOOL Read"
     }
 
     color = colors.get(tool_type, GRAY)
-    label = tool_type[:3].upper()
+    label = labels.get(tool_type, tool_type.upper())
 
     if secondary:
-        return f"{color}[{label}]{RESET} {primary} → {secondary}"
+        return f"{color}{label} {primary} → {secondary}{RESET}"
     else:
-        return f"{color}[{label}]{RESET} {primary}"
+        return f"{color}{label} {primary}{RESET}"
 
 
 def render_emoji(tool_type: str, primary: str, secondary: str = "", extra: str = "") -> str:
@@ -146,6 +155,23 @@ def render_output(tool_type: str, primary: str, secondary: str, extra: str, them
         return render_colorful(tool_type, primary, secondary, extra)
 
 
+def render_system_message(tool_type: str, primary: str, secondary: str = "") -> str:
+    """Render clean message for systemMessage output (no ANSI colors)."""
+    labels = {
+        "mcp": "MCP",
+        "agent": "AGENT",
+        "skill": "SKILL",
+        "command": "CMD",
+        "native": "TOOL"
+    }
+    label = labels.get(tool_type, tool_type.upper())
+
+    if secondary:
+        return f"{label} {primary} → {secondary}"
+    else:
+        return f"{label} {primary}"
+
+
 def main():
     try:
         # Read input from stdin
@@ -166,15 +192,25 @@ def main():
             # Record statistics
             record_tool_usage(tool_name)
 
-            # Render and print output
+            # Generate display message for systemMessage (visible in console)
+            display_msg = render_system_message(tool_type, primary, secondary)
+
+            # Also render themed output to stderr (visible in verbose mode)
             output = render_output(tool_type, primary, secondary, extra, theme)
             print(output, file=sys.stderr)
 
-        # Return success response
-        response = {
-            "continue": True,
-            "suppressOutput": False
-        }
+            # Return success response with systemMessage for console visibility
+            response = {
+                "continue": True,
+                "suppressOutput": False,
+                "systemMessage": f"📊 {display_msg}"
+            }
+        else:
+            response = {
+                "continue": True,
+                "suppressOutput": False
+            }
+
         print(json.dumps(response))
 
     except Exception as e:

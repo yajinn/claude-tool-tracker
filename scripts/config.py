@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional
 
 # Default configuration
 DEFAULT_CONFIG = {
-    "theme": "colorful",  # colorful, minimal, emoji
+    "theme": "colorful",  # colorful (default), minimal (clean), emoji
     "stats_location": "global",  # global, local
     "enabled_categories": ["native", "mcp", "agent", "skill", "command"],
     "show_stats_on_exit": False,
