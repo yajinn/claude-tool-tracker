@@ -1,6 +1,6 @@
 {
   "name": "claude-tool-tracker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Visual tool usage logging with statistics and theme support for Claude Code",
   "author": {
     "name": "Yasin Coskun",

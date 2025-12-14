@@ -593,7 +593,7 @@
     <section class="hero">
         <div class="container">
             <h1>Claude Tool Tracker</h1>
-            <p>Track and visualize every tool call in Claude Code with beautiful themes and detailed statistics.</p>
+            <p>See every tool call <strong>in real-time</strong> with beautiful themes and detailed statistics with subcategory breakdown.</p>
             <div class="hero-buttons">
                 <a href="#installation" class="btn btn-primary">Get Started</a>
                 <a href="https://github.com/yajinn/claude-tool-tracker" class="btn btn-secondary" target="_blank">View on GitHub</a>
@@ -637,14 +637,14 @@
             <p class="section-subtitle">Everything you need to understand your Claude Code tool usage</p>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Visual Logging</h3>
-                    <p>See every tool call categorized and color-coded in real-time. MCP servers, agents, native tools - all clearly labeled.</p>
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-Time Display</h3>
+                    <p>See every tool call <strong>as it happens</strong> in the console: <code style="font-size: 0.8rem;">📊 TOOL Read</code></p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3>Statistics Tracking</h3>
-                    <p>Track session and all-time statistics with visual progress bars, top tools breakdown, and category analysis.</p>
+                    <h3>Subcategory Breakdown</h3>
+                    <p>Statistics show detailed breakdown: which MCP servers, which agents, which native tools you use most.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎭</div>
@@ -692,9 +692,9 @@
                         <span class="theme-name">Minimal</span>
                     </div>
                     <div class="theme-preview minimal-preview">
-                        <div class="line"><span class="tag">[MCP]</span> context7 &rarr; get-library-docs</div>
-                        <div class="line"><span class="tag" style="color: #a371f7;">[AGE]</span> code-reviewer</div>
-                        <div class="line"><span class="tag" style="color: #58a6ff;">[NAT]</span> Read</div>
+                        <div class="line"><span style="color: #39c5cf;">MCP</span> context7 &rarr; get-library-docs</div>
+                        <div class="line"><span style="color: #a371f7;">AGENT</span> code-reviewer</div>
+                        <div class="line"><span style="color: #3fb950;">TOOL</span> Read</div>
                     </div>
                 </div>
                 <div class="theme-card">
@@ -720,9 +720,9 @@
                 <div class="install-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>Add the Marketplace</h3>
+                        <h3>Add the Marketplace Source</h3>
                         <div class="code-block">
-                            <span class="prompt">/</span><span class="command">plugin marketplace add yajinn/claude-tool-tracker</span>
+                            <span class="prompt">$</span><span class="command"> claude plugins add-source yajinn-plugins https://raw.githubusercontent.com/yajinn/claude-tool-tracker/main/.claude-plugin/marketplace.json</span>
                         </div>
                     </div>
                 </div>
@@ -731,15 +731,15 @@
                     <div class="step-content">
                         <h3>Install the Plugin</h3>
                         <div class="code-block">
-                            <span class="prompt">/</span><span class="command">plugin install claude-tool-tracker@yajinn-plugins</span>
+                            <span class="prompt">$</span><span class="command"> claude plugins add yajinn-plugins/claude-tool-tracker</span>
                         </div>
                     </div>
                 </div>
                 <div class="install-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Restart & Use</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 12px;">Restart Claude Code. Every tool call will now be tracked!</p>
+                        <h3>Restart & See Real-Time Tracking</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 12px;">Restart Claude Code. Every tool call will show: <code style="background: var(--bg-tertiary); padding: 2px 8px; border-radius: 4px;">📊 TOOL Read</code></p>
                         <div class="code-block">
                             <span class="prompt">/</span><span class="command">tool-stats</span>
                         </div>
@@ -796,8 +796,8 @@
     <!-- Stats Preview -->
     <section class="stats-section">
         <div class="container">
-            <h2 class="section-title">Detailed Statistics</h2>
-            <p class="section-subtitle">Understand your tool usage patterns</p>
+            <h2 class="section-title">Statistics with Breakdown</h2>
+            <p class="section-subtitle">See exactly which tools, MCP servers, and agents you use</p>
             <div class="stats-preview">
                 <div class="stats-title">SESSION STATISTICS</div>
                 <div class="stat-row">
@@ -808,6 +808,11 @@
                     </div>
                     <span class="stat-percent">75.0%</span>
                 </div>
+                <div style="margin-left: 20px; margin-bottom: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+                    <div>└─ Read (20)</div>
+                    <div>└─ Edit (12)</div>
+                    <div>└─ Bash (8)</div>
+                </div>
                 <div class="stat-row">
                     <span class="stat-label">MCP Servers</span>
                     <span class="stat-value">12</span>
@@ -816,21 +821,21 @@
                     </div>
                     <span class="stat-percent">20.0%</span>
                 </div>
-                <div class="stat-row">
-                    <span class="stat-label">Agents</span>
-                    <span class="stat-value">2</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill purple" style="width: 3.3%;"></div>
-                    </div>
-                    <span class="stat-percent">3.3%</span>
+                <div style="margin-left: 20px; margin-bottom: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+                    <div>└─ context7 (8)</div>
+                    <div>└─ playwright (4)</div>
                 </div>
                 <div class="stat-row">
-                    <span class="stat-label">Skills</span>
-                    <span class="stat-value">1</span>
+                    <span class="stat-label">Agents</span>
+                    <span class="stat-value">3</span>
                     <div class="stat-bar">
-                        <div class="stat-fill" style="width: 1.7%; background: #d29922;"></div>
+                        <div class="stat-fill purple" style="width: 5%;"></div>
                     </div>
-                    <span class="stat-percent">1.7%</span>
+                    <span class="stat-percent">5.0%</span>
+                </div>
+                <div style="margin-left: 20px; margin-bottom: 16px; font-size: 0.8rem; color: var(--text-secondary);">
+                    <div>└─ code-reviewer (2)</div>
+                    <div>└─ Explore (1)</div>
                 </div>
             </div>
         </div>

@@ -1,30 +1,59 @@
 # Claude Tool Tracker
 
-Visual tool usage logging with statistics and theme support for Claude Code.
+Visual tool usage logging with **real-time display** and detailed statistics for Claude Code.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Features
 
+### Real-Time Display
+
+See every tool call **as it happens** in the Claude console:
+
+```
+📊 MCP context7 → get-library-docs
+📊 AGENT code-reviewer
+📊 TOOL Read
+📊 SKILL mem-search
+```
+
 ### Visual Logging
 
-See every tool call categorized and color-coded:
+Tool calls are categorized and color-coded:
 
-- **MCP Servers** - Cyan boxes for external integrations
-- **Agents** - Magenta boxes for Task/subagent calls
-- **Skills** - Yellow boxes for skill invocations
-- **Commands** - Green boxes for slash commands
-- **Native Tools** - Blue boxes for Read, Write, Edit, Bash, etc.
+- **MCP Servers** (Cyan) - External integrations like context7, playwright
+- **Agents** (Magenta) - Task/subagent calls like code-reviewer, Explore
+- **Skills** (Yellow) - Skill invocations
+- **Commands** (Green) - Slash commands
+- **Native Tools** (Blue) - Read, Write, Edit, Bash, Grep, etc.
 
-### Statistics Tracking
+### Statistics with Subcategory Breakdown
 
-Track your tool usage patterns:
+Track your tool usage patterns with detailed breakdowns:
 
-- Session-based and all-time statistics
-- Category breakdown with visual bars
-- Top 5 most used tools
-- Persistent storage (global or per-project)
+```
+==================================================
+  SESSION STATISTICS
+==================================================
+
+  Native Tools      45 ███████████████ (75.0%)
+    └─ Read                  (20)
+    └─ Edit                  (12)
+    └─ Bash                  (8)
+    └─ Grep                  (5)
+
+  MCP Servers       12 █████ (20.0%)
+    └─ context7              (8)
+    └─ playwright            (4)
+
+  Agents             3 █ (5.0%)
+    └─ code-reviewer         (2)
+    └─ Explore               (1)
+
+  Total: 60 tool calls
+==================================================
+```
 
 ### Theme Support
 
@@ -33,28 +62,31 @@ Choose your preferred visual style:
 | Theme | Description |
 |-------|-------------|
 | **Colorful** | Full colored boxes with borders (default) |
-| **Minimal** | Single line, muted colors |
+| **Minimal** | Clean single-line format |
 | **Emoji** | Emoji prefixes for quick scanning |
 
 ## Installation
 
-### Quick Install (2 steps)
+### Quick Install
 
-**Step 1:** Add the marketplace
 ```bash
-/plugin marketplace add yajinn/claude-tool-tracker
-```
+# Step 1: Add the marketplace source
+claude plugins add-source yajinn-plugins https://raw.githubusercontent.com/yajinn/claude-tool-tracker/main/.claude-plugin/marketplace.json
 
-**Step 2:** Install the plugin
-```bash
-/plugin install claude-tool-tracker@yajinn-plugins
-```
+# Step 2: Install the plugin
+claude plugins add yajinn-plugins/claude-tool-tracker
 
-**Step 3:** Restart Claude Code to activate
+# Step 3: Restart Claude Code
+```
 
 ### Verify Installation
 
-After restarting, run:
+After restarting, use any tool and you'll see:
+```
+📊 TOOL Read
+```
+
+Check statistics with:
 ```bash
 /tool-stats
 ```
@@ -63,15 +95,15 @@ After restarting, run:
 
 ```bash
 git clone https://github.com/yajinn/claude-tool-tracker.git
-/plugin marketplace add ./claude-tool-tracker
-/plugin install claude-tool-tracker@yajinn-plugins
+cd claude-tool-tracker
+claude plugins add ./
 ```
 
 ### Uninstall
 
 ```bash
-/plugin uninstall claude-tool-tracker@yajinn-plugins
-/plugin marketplace remove yajinn-plugins
+claude plugins remove yajinn-plugins/claude-tool-tracker
+claude plugins remove-source yajinn-plugins
 ```
 
 ## Usage
@@ -80,9 +112,9 @@ git clone https://github.com/yajinn/claude-tool-tracker.git
 
 | Command | Description |
 |---------|-------------|
-| `/tool-stats` | Show current session statistics |
+| `/tool-stats` | Show current session statistics with subcategory breakdown |
 | `/tool-stats --all` | Show all-time statistics |
-| `/tool-theme <theme>` | Change visual theme |
+| `/tool-theme <theme>` | Change visual theme (colorful, minimal, emoji) |
 | `/tool-config` | View/modify configuration |
 
 ### Theme Examples
@@ -107,9 +139,9 @@ git clone https://github.com/yajinn/claude-tool-tracker.git
 #### Minimal
 
 ```
-[MCP] context7 → get-library-docs
-[AGE] code-reviewer
-[NAT] Read
+MCP context7 → get-library-docs
+AGENT code-reviewer
+TOOL Read
 ```
 
 #### Emoji
@@ -118,30 +150,6 @@ git clone https://github.com/yajinn/claude-tool-tracker.git
 🌐 context7 → get-library-docs
 🤖 code-reviewer
 🔧 Read
-```
-
-### Statistics Output
-
-```
-==================================================
-  SESSION STATISTICS
-==================================================
-
-  Native Tools       45 ████████████████████ (75.0%)
-  MCP Servers        12 █████ (20.0%)
-  Agents              2 █ (3.3%)
-  Skills              1  (1.7%)
-  Commands            0  (0.0%)
-
-  Total: 60 tool calls
-
-  Top 5 Tools:
-    1. Read                      (28)
-    2. Edit                      (12)
-    3. Bash                      (8)
-    4. context7:get-library-docs (6)
-    5. Grep                      (5)
-==================================================
 ```
 
 ## Configuration
@@ -168,6 +176,13 @@ show_stats_on_exit: false # Show stats when session ends
 
 - **Global**: `~/.claude/claude-tool-tracker/stats.json`
 - **Local**: `.claude/claude-tool-tracker/stats.json`
+
+## What's New in v1.1.0
+
+- **Real-time console display** - See tool usage as it happens
+- **Subcategory breakdown** - Detailed stats showing which MCP servers, agents, and tools are used
+- **Improved minimal theme** - Cleaner, more readable format
+- **Better installation** - Simplified installation process
 
 ## Requirements
 
