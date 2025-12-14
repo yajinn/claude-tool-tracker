@@ -113,7 +113,10 @@ def render_emoji(tool_type: str, primary: str, secondary: str = "", extra: str =
 
 
 def parse_tool_info(tool_name: str, tool_input: dict) -> tuple:
-    """Parse tool information and return (type, primary, secondary, extra)."""
+    """Parse tool information and return (type, primary, secondary, extra, detailed_name).
+
+    detailed_name is used for stats tracking with subcategory info.
+    """
 
     if tool_name.startswith("mcp__"):
         # MCP Tool - Format: mcp__server__toolname
@@ -121,28 +124,38 @@ def parse_tool_info(tool_name: str, tool_input: dict) -> tuple:
         parts = without_prefix.split("__", 1)
         server = parts[0] if parts else "unknown"
         actual_tool = parts[1] if len(parts) > 1 else "unknown"
-        return ("mcp", server, actual_tool, "")
+        # detailed_name: mcp:context7:get-library-docs
+        detailed_name = f"mcp:{server}:{actual_tool}"
+        return ("mcp", server, actual_tool, "", detailed_name)
 
     elif tool_name == "Task":
         # Agent/Subagent call
         subagent_type = tool_input.get("subagent_type", "general")
         description = tool_input.get("description", "")
         extra = f"Task: {description}" if description else ""
-        return ("agent", subagent_type, "", extra)
+        # detailed_name: agent:code-reviewer
+        detailed_name = f"agent:{subagent_type}"
+        return ("agent", subagent_type, "", extra, detailed_name)
 
     elif tool_name == "Skill":
         # Skill/Plugin call
         skill_name = tool_input.get("skill", "unknown")
-        return ("skill", skill_name, "", "")
+        # detailed_name: skill:mem-search
+        detailed_name = f"skill:{skill_name}"
+        return ("skill", skill_name, "", "", detailed_name)
 
     elif tool_name == "SlashCommand":
         # Slash command
         command = tool_input.get("command", "unknown")
-        return ("command", command, "", "")
+        # detailed_name: cmd:/commit
+        detailed_name = f"cmd:{command}"
+        return ("command", command, "", "", detailed_name)
 
     else:
         # Native Claude Code tools
-        return ("native", tool_name, "", "")
+        # detailed_name: native:Read
+        detailed_name = f"native:{tool_name}"
+        return ("native", tool_name, "", "", detailed_name)
 
 
 def render_output(tool_type: str, primary: str, secondary: str, extra: str, theme: str) -> str:
@@ -185,12 +198,12 @@ def main():
         theme = config.get("theme", "colorful")
 
         # Parse tool information
-        tool_type, primary, secondary, extra = parse_tool_info(tool_name, tool_input)
+        tool_type, primary, secondary, extra, detailed_name = parse_tool_info(tool_name, tool_input)
 
         # Check if category is enabled
         if is_category_enabled(tool_type):
-            # Record statistics
-            record_tool_usage(tool_name)
+            # Record statistics with detailed name for subcategory tracking
+            record_tool_usage(detailed_name)
 
             # Generate display message for systemMessage (visible in console)
             display_msg = render_system_message(tool_type, primary, secondary)

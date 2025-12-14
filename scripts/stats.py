@@ -90,17 +90,38 @@ def save_stats(stats: Dict[str, Any]) -> bool:
 
 
 def categorize_tool(tool_name: str) -> str:
-    """Determine the category of a tool."""
-    if tool_name.startswith("mcp__"):
+    """Determine the category of a tool.
+
+    Supports both old format (mcp__server__tool) and new format (mcp:server:tool).
+    """
+    # New detailed format: category:subcategory:detail
+    if tool_name.startswith("mcp:") or tool_name.startswith("mcp__"):
         return "mcp"
-    elif tool_name == "Task":
+    elif tool_name.startswith("agent:") or tool_name == "Task":
         return "agent"
-    elif tool_name == "Skill":
+    elif tool_name.startswith("skill:") or tool_name == "Skill":
         return "skill"
-    elif tool_name == "SlashCommand":
+    elif tool_name.startswith("cmd:") or tool_name == "SlashCommand":
         return "command"
+    elif tool_name.startswith("native:"):
+        return "native"
     else:
         return "native"
+
+
+def parse_detailed_tool_name(tool_name: str) -> tuple:
+    """Parse detailed tool name into (category, subcategory, detail).
+
+    Examples:
+        mcp:context7:get-library-docs -> (mcp, context7, get-library-docs)
+        agent:code-reviewer -> (agent, code-reviewer, None)
+        native:Read -> (native, Read, None)
+    """
+    parts = tool_name.split(":", 2)
+    category = parts[0] if parts else "native"
+    subcategory = parts[1] if len(parts) > 1 else tool_name
+    detail = parts[2] if len(parts) > 2 else None
+    return (category, subcategory, detail)
 
 
 def record_tool_usage(tool_name: str) -> None:
@@ -170,8 +191,45 @@ def get_top_tools(n: int = 5, session_only: bool = True) -> list:
     return sorted_tools[:n]
 
 
+def get_subcategory_breakdown(tools: dict) -> dict:
+    """Group tools by category and subcategory.
+
+    Returns:
+        {
+            "mcp": {"context7": 5, "playwright": 3},
+            "agent": {"code-reviewer": 2, "Explore": 1},
+            "native": {"Read": 10, "Write": 5}
+        }
+    """
+    breakdown = {
+        "native": {},
+        "mcp": {},
+        "agent": {},
+        "skill": {},
+        "command": {}
+    }
+
+    for tool_name, count in tools.items():
+        category, subcategory, detail = parse_detailed_tool_name(tool_name)
+
+        # Handle old format tools
+        if tool_name.startswith("mcp__"):
+            parts = tool_name.split("__")
+            category = "mcp"
+            subcategory = parts[1] if len(parts) > 1 else "unknown"
+        elif not ":" in tool_name:
+            # Old native tool format
+            category = categorize_tool(tool_name)
+            subcategory = tool_name
+
+        if category in breakdown:
+            breakdown[category][subcategory] = breakdown[category].get(subcategory, 0) + count
+
+    return breakdown
+
+
 def format_stats_output(session_only: bool = True) -> str:
-    """Format statistics for display."""
+    """Format statistics for display with subcategory breakdown."""
     if session_only:
         stats = get_session_stats()
         title = "SESSION STATISTICS"
@@ -180,10 +238,14 @@ def format_stats_output(session_only: bool = True) -> str:
         title = "ALL-TIME STATISTICS"
 
     categories = stats.get("categories", {})
+    tools = stats.get("tools", {})
     total = sum(categories.values())
 
     if total == 0:
         return f"No tool usage recorded yet for {'this session' if session_only else 'all time'}."
+
+    # Get subcategory breakdown
+    breakdown = get_subcategory_breakdown(tools)
 
     # Build output
     lines = []
@@ -192,42 +254,39 @@ def format_stats_output(session_only: bool = True) -> str:
     lines.append(f"\033[1m\033[36m{'=' * 50}\033[0m")
     lines.append("")
 
-    # Category breakdown
-    max_count = max(categories.values()) if categories.values() else 1
-    bar_width = 20
-
-    category_labels = {
-        "native": ("Native Tools", "\033[34m"),  # Blue
-        "mcp": ("MCP Servers", "\033[36m"),       # Cyan
-        "agent": ("Agents", "\033[35m"),          # Magenta
-        "skill": ("Skills", "\033[33m"),          # Yellow
-        "command": ("Commands", "\033[32m")       # Green
+    # Category config
+    category_config = {
+        "native": ("Native Tools", "\033[34m", "TOOL"),      # Blue
+        "mcp": ("MCP Servers", "\033[36m", "MCP"),           # Cyan
+        "agent": ("Agents", "\033[35m", "AGENT"),            # Magenta
+        "skill": ("Skills", "\033[33m", "SKILL"),            # Yellow
+        "command": ("Commands", "\033[32m", "CMD")           # Green
     }
 
-    for cat, (label, color) in category_labels.items():
+    max_count = max(categories.values()) if categories.values() else 1
+    bar_width = 15
+
+    for cat, (label, color, prefix) in category_config.items():
         count = categories.get(cat, 0)
+        if count == 0:
+            continue
+
         bar_len = int((count / max_count) * bar_width) if max_count > 0 else 0
         bar = '\u2588' * bar_len
         percentage = (count / total * 100) if total > 0 else 0
         lines.append(f"  {color}{label:15}\033[0m {count:4} {color}{bar}\033[0m ({percentage:.1f}%)")
 
-    lines.append("")
+        # Show subcategory breakdown
+        subcats = breakdown.get(cat, {})
+        if subcats:
+            # Sort by count descending
+            sorted_subcats = sorted(subcats.items(), key=lambda x: x[1], reverse=True)
+            for subcat, subcount in sorted_subcats[:5]:  # Top 5 per category
+                lines.append(f"    \033[2m└─ {subcat[:20]:20} ({subcount})\033[0m")
+
+        lines.append("")
+
     lines.append(f"\033[1m  Total: {total} tool calls\033[0m")
-    lines.append("")
-
-    # Top tools
-    top_tools = get_top_tools(5, session_only)
-    if top_tools:
-        lines.append("\033[1m  Top 5 Tools:\033[0m")
-        for i, (tool, count) in enumerate(top_tools, 1):
-            # Shorten MCP tool names
-            display_name = tool
-            if tool.startswith("mcp__"):
-                parts = tool.split("__")
-                if len(parts) >= 3:
-                    display_name = f"{parts[1]}:{parts[2][:15]}"
-            lines.append(f"    {i}. {display_name[:25]:25} ({count})")
-
     lines.append(f"\033[1m\033[36m{'=' * 50}\033[0m")
 
     return '\n'.join(lines)
