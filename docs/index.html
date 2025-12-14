@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Tool Tracker - Visual Tool Logging for Claude Code</title>
+    <meta name="description" content="Track and visualize every tool call in Claude Code with beautiful themes and detailed statistics.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #a371f7;
+            --accent-yellow: #d29922;
+            --accent-cyan: #39c5cf;
+            --accent-red: #f85149;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .github-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .github-btn:hover {
+            background: var(--border-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4393e6;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Terminal Demo */
+        .terminal-section {
+            padding: 60px 0;
+        }
+
+        .terminal {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .terminal-header {
+            background: var(--bg-tertiary);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27ca40; }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .terminal-line {
+            margin-bottom: 16px;
+        }
+
+        .tool-box {
+            border: 1px solid;
+            border-radius: 6px;
+            padding: 8px 16px;
+            margin: 8px 0;
+        }
+
+        .tool-box.mcp {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .tool-box.agent {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .tool-box.native {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .tool-category {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        /* Features */
+        .features {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+
+        /* Themes Section */
+        .themes {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .theme-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .theme-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-name {
+            font-weight: 600;
+        }
+
+        .theme-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .theme-preview {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            min-height: 160px;
+        }
+
+        .colorful-preview .box {
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .minimal-preview .line {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .minimal-preview .tag {
+            color: var(--accent-cyan);
+        }
+
+        .emoji-preview .line {
+            margin-bottom: 8px;
+        }
+
+        /* Installation */
+        .installation {
+            padding: 80px 0;
+        }
+
+        .install-steps {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .install-step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            margin-bottom: 12px;
+        }
+
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .prompt {
+            color: var(--accent-green);
+        }
+
+        .code-block .command {
+            color: var(--text-primary);
+        }
+
+        /* Commands */
+        .commands {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .commands-table {
+            max-width: 800px;
+            margin: 40px auto 0;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .commands-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .commands-table th,
+        .commands-table td {
+            padding: 16px 24px;
+            text-align: left;
+        }
+
+        .commands-table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .commands-table tr:not(:last-child) td {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .commands-table code {
+            background: var(--bg-secondary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Stats Preview */
+        .stats-section {
+            padding: 80px 0;
+        }
+
+        .stats-preview {
+            max-width: 600px;
+            margin: 40px auto 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .stats-title {
+            text-align: center;
+            color: var(--accent-yellow);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            width: 140px;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            width: 40px;
+            text-align: right;
+            margin-right: 12px;
+        }
+
+        .stat-bar {
+            flex: 1;
+            height: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .stat-fill.blue { background: var(--accent-blue); }
+        .stat-fill.cyan { background: var(--accent-cyan); }
+        .stat-fill.purple { background: var(--accent-purple); }
+
+        .stat-percent {
+            width: 60px;
+            text-align: right;
+            color: var(--text-secondary);
+            margin-left: 12px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .footer-credit {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer-credit a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .terminal-body {
+                font-size: 0.8rem;
+                padding: 16px;
+            }
+
+            .commands-table th,
+            .commands-table td {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <span class="logo-icon">📊</span>
+                    <span>Claude Tool Tracker</span>
+                </a>
+                <a href="https://github.com/yajinn/claude-tool-tracker" class="github-btn" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>GitHub</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>Claude Tool Tracker</h1>
+            <p>Track and visualize every tool call in Claude Code with beautiful themes and detailed statistics.</p>
+            <div class="hero-buttons">
+                <a href="#installation" class="btn btn-primary">Get Started</a>
+                <a href="https://github.com/yajinn/claude-tool-tracker" class="btn btn-secondary" target="_blank">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terminal Demo -->
+    <section class="terminal-section">
+        <div class="container">
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">Claude Code - Tool Tracking Active</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="tool-box mcp">
+                        <span class="tool-category">MCP</span> context7 &rarr; get-library-docs
+                    </div>
+                    <div class="tool-box agent">
+                        <span class="tool-category">AGENT</span> code-reviewer
+                        <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 4px;">Task: Review authentication changes</div>
+                    </div>
+                    <div class="tool-box native">
+                        <span class="tool-category">TOOL</span> Read
+                    </div>
+                    <div class="tool-box native">
+                        <span class="tool-category">TOOL</span> Edit
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Features</h2>
+            <p class="section-subtitle">Everything you need to understand your Claude Code tool usage</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Visual Logging</h3>
+                    <p>See every tool call categorized and color-coded in real-time. MCP servers, agents, native tools - all clearly labeled.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Statistics Tracking</h3>
+                    <p>Track session and all-time statistics with visual progress bars, top tools breakdown, and category analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Multiple Themes</h3>
+                    <p>Choose from Colorful, Minimal, or Emoji themes to match your workflow and visual preference.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Zero Config</h3>
+                    <p>Install and go. The plugin works automatically with sensible defaults. Customize when you need to.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Persistent Storage</h3>
+                    <p>Statistics are saved between sessions. Track your tool usage patterns over time.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Hook Integration</h3>
+                    <p>Uses Claude Code's PreToolUse hooks for seamless, non-intrusive tracking.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Themes -->
+    <section class="themes">
+        <div class="container">
+            <h2 class="section-title">Choose Your Theme</h2>
+            <p class="section-subtitle">Three beautiful themes to match your style</p>
+            <div class="themes-grid">
+                <div class="theme-card">
+                    <div class="theme-header">
+                        <span class="theme-name">Colorful</span>
+                        <span class="theme-badge">Default</span>
+                    </div>
+                    <div class="theme-preview colorful-preview">
+                        <div class="box" style="border-color: #39c5cf; color: #39c5cf;">MCP  context7 &rarr; get-library-docs</div>
+                        <div class="box" style="border-color: #a371f7; color: #a371f7;">AGENT  code-reviewer</div>
+                        <div class="box" style="border-color: #58a6ff; color: #58a6ff;">TOOL  Read</div>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <div class="theme-header">
+                        <span class="theme-name">Minimal</span>
+                    </div>
+                    <div class="theme-preview minimal-preview">
+                        <div class="line"><span class="tag">[MCP]</span> context7 &rarr; get-library-docs</div>
+                        <div class="line"><span class="tag" style="color: #a371f7;">[AGE]</span> code-reviewer</div>
+                        <div class="line"><span class="tag" style="color: #58a6ff;">[NAT]</span> Read</div>
+                    </div>
+                </div>
+                <div class="theme-card">
+                    <div class="theme-header">
+                        <span class="theme-name">Emoji</span>
+                    </div>
+                    <div class="theme-preview emoji-preview">
+                        <div class="line">🌐 context7 &rarr; get-library-docs</div>
+                        <div class="line">🤖 code-reviewer</div>
+                        <div class="line">🔧 Read</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section class="installation" id="installation">
+        <div class="container">
+            <h2 class="section-title">Installation</h2>
+            <p class="section-subtitle">Get started in seconds</p>
+            <div class="install-steps">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Install the Plugin</h3>
+                        <div class="code-block">
+                            <span class="prompt">$</span> <span class="command">claude plugins add yajinn/claude-tool-tracker</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Start Using Claude Code</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 12px;">The plugin activates automatically. Every tool call will now be tracked and displayed.</p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>View Your Statistics</h3>
+                        <div class="code-block">
+                            <span class="prompt">/</span><span class="command">tool-stats</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands -->
+    <section class="commands">
+        <div class="container">
+            <h2 class="section-title">Commands</h2>
+            <p class="section-subtitle">Control your tracking experience</p>
+            <div class="commands-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/tool-stats</code></td>
+                            <td>Show current session statistics</td>
+                        </tr>
+                        <tr>
+                            <td><code>/tool-stats --all</code></td>
+                            <td>Show all-time statistics</td>
+                        </tr>
+                        <tr>
+                            <td><code>/tool-theme colorful</code></td>
+                            <td>Use colorful boxed theme</td>
+                        </tr>
+                        <tr>
+                            <td><code>/tool-theme minimal</code></td>
+                            <td>Use minimal single-line theme</td>
+                        </tr>
+                        <tr>
+                            <td><code>/tool-theme emoji</code></td>
+                            <td>Use emoji prefix theme</td>
+                        </tr>
+                        <tr>
+                            <td><code>/tool-config</code></td>
+                            <td>View and modify configuration</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Preview -->
+    <section class="stats-section">
+        <div class="container">
+            <h2 class="section-title">Detailed Statistics</h2>
+            <p class="section-subtitle">Understand your tool usage patterns</p>
+            <div class="stats-preview">
+                <div class="stats-title">SESSION STATISTICS</div>
+                <div class="stat-row">
+                    <span class="stat-label">Native Tools</span>
+                    <span class="stat-value">45</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill blue" style="width: 75%;"></div>
+                    </div>
+                    <span class="stat-percent">75.0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">MCP Servers</span>
+                    <span class="stat-value">12</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill cyan" style="width: 20%;"></div>
+                    </div>
+                    <span class="stat-percent">20.0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Agents</span>
+                    <span class="stat-value">2</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill purple" style="width: 3.3%;"></div>
+                    </div>
+                    <span class="stat-percent">3.3%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Skills</span>
+                    <span class="stat-value">1</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 1.7%; background: #d29922;"></div>
+                    </div>
+                    <span class="stat-percent">1.7%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/yajinn/claude-tool-tracker" target="_blank">GitHub</a>
+                <a href="https://github.com/yajinn/claude-tool-tracker/issues" target="_blank">Issues</a>
+                <a href="https://github.com/yajinn/claude-tool-tracker/blob/main/LICENSE" target="_blank">License</a>
+            </div>
+            <p class="footer-credit">
+                Made with ❤️ by <a href="https://github.com/yajinn" target="_blank">Yasin Coskun</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
