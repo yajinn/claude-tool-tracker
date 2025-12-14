@@ -1,0 +1,28 @@
+{
+  "name": "yasincoskun-plugins",
+  "description": "Claude Code plugins by Yasin Coskun",
+  "owner": {
+    "name": "Yasin Coskun",
+    "url": "https://github.com/yasincoskun"
+  },
+  "plugins": [
+    {
+      "name": "claude-tool-tracker",
+      "source": "https://github.com/yasincoskun/claude-tool-tracker",
+      "description": "Visual tool usage logging with statistics and theme support for Claude Code",
+      "version": "1.0.0",
+      "author": {
+        "name": "Yasin Coskun",
+        "url": "https://github.com/yasincoskun"
+      },
+      "license": "MIT",
+      "keywords": [
+        "claude-code",
+        "plugin",
+        "tool-tracking",
+        "statistics",
+        "debugging"
+      ]
+    }
+  ]
+}

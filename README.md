@@ -38,16 +38,34 @@ Choose your preferred visual style:
 
 ## Installation
 
-### From GitHub
+### Quick Install (Recommended)
 
 ```bash
-claude plugins add yasincoskun/claude-tool-tracker
+# Add the marketplace
+claude plugins marketplace add yasincoskun/claude-tool-tracker
+
+# Install the plugin
+claude plugins add claude-tool-tracker
+```
+
+### Alternative: Direct GitHub Install
+
+```bash
+claude plugins add github:yasincoskun/claude-tool-tracker
 ```
 
 ### Local Development
 
 ```bash
-claude plugins add /path/to/claude-tool-tracker
+git clone https://github.com/yasincoskun/claude-tool-tracker.git
+claude plugins add ./claude-tool-tracker
+```
+
+### Verify Installation
+
+After installation, restart Claude Code and run:
+```bash
+/tool-stats
 ```
 
 ## Usage
